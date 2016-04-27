@@ -8,29 +8,30 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
   @teamId "T0001"
   @userId "U12345"
   @templateName "test_template"
+  @templateText "Some awesome template text"
 
   test "it creates a new template and returns OK status" do
-    text = "Some awesome template text"
-    content = build_content("set", text)
-    
-    conn = conn(:post, "/template", content)
+
+    content = build_request_content("set", @templateText)
+    conn(:post, "/template", content)
     |> pass_request
     |> assert_OK_response
 
     query = from t in Template,
             where: t.name == @templateName,
-            select: t.text
-    assert Repo.one(query) == text
+            select: t
+    template = Repo.one(query)
+    assert template.text == @templateText
+    assert template.user_id == @userId
+    assert template.team_id == @teamId
   end
 
   test "it updates existing template with new text and returns OK status" do
-    init_text = "First text"
-    changeset = Template.changeset(%Template{}, %{team_id: @teamId, user_id: @userId, name: @templateName, text: init_text})
-    {:ok, created} = Repo.insert(changeset)
+    created = create_template
 
     new_text = "Some very different template text!!!"
-    content = build_content("set", new_text)
-    conn = conn(:post, "/template", content)
+    content = build_request_content("set", new_text)
+    conn(:post, "/template", content)
     |> pass_request
     |> assert_OK_response
 
@@ -40,6 +41,38 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
     template = Repo.one(query)
     assert template.id == created.id
     assert template.text == new_text
+  end
+
+  test "it reads existing template" do
+    create_template
+
+    content = build_request_content("get")
+    conn = conn(:post, "/template", content)
+    |> pass_request
+
+    assert_OK_response(conn)
+    assert conn.resp_body == @templateText
+  end
+
+
+  defp create_template() do
+    {:ok, created} = Template.changeset(
+      %Template{}, 
+      %{
+        team_id: @teamId,
+        user_id: @userId, 
+        name: @templateName, 
+        text: @templateText
+      }
+    )
+    |> Repo.insert
+    
+    created
+  end
+
+  defp build_request_content(command, text \\ "") do
+    token = Application.get_env(:slack_template, :slack_token)
+    "text=#{command} #{@templateName} #{text}&token=#{token}&team_id=#{@teamId}&team_domain=example&channel_id=C6789123&channel_name=test&user_id=#{@userId}&user_name=TestUser&command=/template"
   end
 
   defp assert_OK_response(conn) do
@@ -53,8 +86,4 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
     |> Router.call(Router.init([]))
   end
 
-  defp build_content(command, text \\ "") do
-    token = Application.get_env(:slack_template, :slack_token)
-    "text=#{command} #{@templateName} #{text}&token=#{token}&team_id=#{@teamId}&team_domain=example&channel_id=C6789123&channel_name=test&user_id=#{@userId}&user_name=TestUser&command=/template"
-  end
 end
