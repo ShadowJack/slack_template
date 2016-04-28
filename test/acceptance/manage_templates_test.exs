@@ -27,7 +27,7 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
   end
 
   test "it updates existing template with new text and returns OK status" do
-    created = create_template
+    created = create_default_template
 
     new_text = "Some very different template text!!!"
     content = build_request_content("set", new_text)
@@ -44,7 +44,7 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
   end
 
   test "it reads existing template" do
-    create_template
+    create_default_template
 
     content = build_request_content("get")
     conn = conn(:post, "/template", content)
@@ -54,8 +54,13 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
     assert conn.resp_body == @templateText
   end
 
+  test "it lists all existing templates" do
+    create_default_template
 
-  defp create_template() do
+  end
+
+
+  defp create_default_template() do
     {:ok, created} = Template.changeset(
       %Template{}, 
       %{

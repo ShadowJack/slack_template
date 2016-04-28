@@ -1,7 +1,5 @@
 defmodule SlackTemplate.Business.TemplateManager do
-  require Logger
-  import Ecto.Query, only: [from: 2]
-  alias SlackTemplate.{Repo, Models.Template}
+  alias SlackTemplate.Models.Template
 
   @doc """
   Processes user request: 
@@ -14,18 +12,15 @@ defmodule SlackTemplate.Business.TemplateManager do
     |> do_process(team_id, user_id)
   end
 
-  def process(_), do: "Bad request: one of parameters is missing"
+  def process(_) do 
+    "Please enter some command\n\n" <> print_usage
+  end
 
 
 
   @spec do_process([String.t], String.t, String.t) :: String.t
   defp do_process(["help"], _team_id, _user_id) do
-    """
-    Available commands:
-    /template help - prints usage instructions
-    /template set TEMPLATE_NAME TEMPLATE_TEXT - create a new template or update existing one
-    /template get TEMPLATE_NAME - fetch saved template
-    """
+    print_usage
   end
 
   @spec do_process([String.t], String.t, String.t) :: String.t
@@ -38,36 +33,32 @@ defmodule SlackTemplate.Business.TemplateManager do
       text: text
     }
 
-    query = from t in Template,
-            where: t.team_id == ^team_id and
-                   t.user_id == ^user_id and 
-                   t.name == ^name,
-            select: t
-
-    result = 
-      case Repo.one(query) do
-        nil -> %Template{}
-        template -> template
-      end
-      |> Template.changeset(changes)
-      |> Repo.insert_or_update
-
-    case result do
-      {:ok, template} -> "Done!"
-      {:error, changeset} -> 
-        Logger.error(inspect(changeset.errors))
-        "Error: #{inspect(changeset.errors)}"
-    end
+    Template.add_or_update(Template, changes)
   end
 
-  #TODO: create a method for reading a template
   @spec do_process([String.t], String.t, String.t) :: String.t
-  defp do_process(_, _, _) do """
-    Ooops, I don\'t know this command.
-    To get the list of available commands please enter:
-    /template help
+  defp do_process(["get", name | _args], team_id, user_id) do
+    params = %{
+      name: name,
+      team_id: team_id,
+      user_id: user_id
+    }
+
+    Template
+    |> Template.get(params)
+  end
+
+  defp do_process(_, _, _) do
+    "Oops, unknown command!\n\n" <> print_usage
+  end
+
+  defp print_usage do
+    """
+    Available commands:
+    /template help - prints usage instructions
+    /template set TEMPLATE_NAME TEMPLATE_TEXT - create a new template or update existing one
+    /template get TEMPLATE_NAME - fetch saved template
+    /template list - prints a list of all saved templates
     """
   end
-
-
 end
