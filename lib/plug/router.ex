@@ -4,6 +4,8 @@ defmodule SlackTemplate.Plug.Router do
   alias SlackTemplate.Plug.TemplatePlug
 
   plug Plug.Parsers, parsers: [:urlencoded]
+  #TODO: fix connection
+  plug SlackTemplate.Plug.VerifyTokenPlug
 
   plug :match
   plug :dispatch

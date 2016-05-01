@@ -1,10 +1,9 @@
-defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
+defmodule SlackTemplate.Test.Acceptance.ManageTemplatesTest do
   use SlackTemplate.ModelCase
-  use Plug.Test
+  use SlackTemplate.PlugCase
 
   alias SlackTemplate.{Plug.Router,Models.Template}
 
-  @contentType "application/x-www-form-urlencoded"
   @teamId "T0001"
   @userId "U12345"
   @templateName "test_template"
@@ -56,14 +55,14 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
 
   test "it lists all existing templates" do
     create_default_template
-    create_default_template("new_template", "some text")
+    create_default_template("a_template", "some text")
 
     content = build_request_content("list")
     conn = conn(:post, "/template", content)
     |> pass_request
 
     assert_OK_response(conn)
-    assert conn.resp_body == "#{@templateName}\nnew_template"
+    assert conn.resp_body == "a_template\n#{@templateName}"
   end
 
 
@@ -89,15 +88,5 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
     "text=#{command} #{@templateName} #{text}&token=#{token}&team_id=#{@teamId}&team_domain=example&channel_id=C6789123&channel_name=test&user_id=#{@userId}&user_name=TestUser&command=/template"
   end
 
-  defp assert_OK_response(conn) do
-    assert conn.state == :sent
-    assert conn.status == 200
-  end
-
-  defp pass_request(conn) do
-    conn
-    |> put_req_header("content-type", @contentType)
-    |> Router.call(Router.init([]))
-  end
 
 end

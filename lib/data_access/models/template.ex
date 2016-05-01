@@ -80,6 +80,7 @@ defmodule SlackTemplate.Models.Template do
     query = from t in query,
             where: t.team_id == ^params[:team_id] and
                    t.user_id == ^params[:user_id],
+            order_by: [asc: t.name],
             select: t.name
 
     case Repo.all(query) do
