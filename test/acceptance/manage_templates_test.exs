@@ -12,7 +12,7 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
 
   test "it creates a new template and returns OK status" do
 
-    content = build_request_content("set", @templateText)
+    content = build_request_content("set", @templateName, @templateText)
     conn(:post, "/template", content)
     |> pass_request
     |> assert_OK_response
@@ -30,7 +30,7 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
     created = create_default_template
 
     new_text = "Some very different template text!!!"
-    content = build_request_content("set", new_text)
+    content = build_request_content("set", @templateName, new_text)
     conn(:post, "/template", content)
     |> pass_request
     |> assert_OK_response
@@ -46,7 +46,7 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
   test "it reads existing template" do
     create_default_template
 
-    content = build_request_content("get")
+    content = build_request_content("get", @templateName)
     conn = conn(:post, "/template", content)
     |> pass_request
 
@@ -56,18 +56,27 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
 
   test "it lists all existing templates" do
     create_default_template
+    create_default_template("new_template", "some text")
 
+    content = build_request_content("list")
+    conn = conn(:post, "/template", content)
+    |> pass_request
+
+    assert_OK_response(conn)
+    assert conn.resp_body == "#{@templateName}\nnew_template"
   end
 
 
-  defp create_default_template() do
+
+
+  defp create_default_template(name \\ @templateName, text \\ @templateText) do
     {:ok, created} = Template.changeset(
       %Template{}, 
       %{
         team_id: @teamId,
         user_id: @userId, 
-        name: @templateName, 
-        text: @templateText
+        name: name, 
+        text: text 
       }
     )
     |> Repo.insert
@@ -75,7 +84,7 @@ defmodule SlackTemplate.Acceptance.ManageTemplatesTest do
     created
   end
 
-  defp build_request_content(command, text \\ "") do
+  defp build_request_content(command, templateName \\ "", text \\ "") do
     token = Application.get_env(:slack_template, :slack_token)
     "text=#{command} #{@templateName} #{text}&token=#{token}&team_id=#{@teamId}&team_domain=example&channel_id=C6789123&channel_name=test&user_id=#{@userId}&user_name=TestUser&command=/template"
   end

@@ -69,4 +69,22 @@ defmodule SlackTemplate.Models.Template do
       template -> template.text
     end
   end
+
+  @doc """
+  Returns a list of template names for specific user.
+  Receives an Ecto.Query to query upon 
+  and a %Template{} struct of params to search for.
+  """
+  @spec list_all(Ecto.Queryable, %{}) :: [String.t]
+  def list_all(query, params) do
+    query = from t in query,
+            where: t.team_id == ^params[:team_id] and
+                   t.user_id == ^params[:user_id],
+            select: t.name
+
+    case Repo.all(query) do
+      nil -> "You don't have any saved templates"
+      list -> list 
+    end
+  end
 end

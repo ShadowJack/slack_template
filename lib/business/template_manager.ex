@@ -48,6 +48,18 @@ defmodule SlackTemplate.Business.TemplateManager do
     |> Template.get(params)
   end
 
+  @spec do_process([String.t], String.t, String.t) :: String.t
+  defp do_process(["list" | _], team_id, user_id) do
+    params = %{
+      team_id: team_id,
+      user_id: user_id
+    }
+
+    Template
+    |> Template.list_all(params)
+    |> Enum.join("\n")
+  end
+
   defp do_process(_, _, _) do
     "Oops, unknown command!\n\n" <> print_usage
   end
