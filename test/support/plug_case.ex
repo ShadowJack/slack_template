@@ -30,4 +30,12 @@ defmodule SlackTemplate.PlugCase do
     assert conn.state == :sent
     assert conn.status == 200
   end
+
+  @doc """
+  Helper function that validates the error status
+  """
+  def assert_failed_response(conn) do
+    assert conn.state == :sent
+    assert conn.status >= 400
+  end
 end

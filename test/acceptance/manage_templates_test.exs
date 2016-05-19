@@ -2,7 +2,7 @@ defmodule SlackTemplate.Test.Acceptance.ManageTemplatesTest do
   use SlackTemplate.ModelCase
   use SlackTemplate.PlugCase
 
-  alias SlackTemplate.{Plug.Router,Models.Template}
+  alias SlackTemplate.Models.Template
 
   @teamId "T0001"
   @userId "U12345"
@@ -85,7 +85,7 @@ defmodule SlackTemplate.Test.Acceptance.ManageTemplatesTest do
 
   defp build_request_content(command, templateName \\ "", text \\ "") do
     token = Application.get_env(:slack_template, :slack_token)
-    "text=#{command} #{@templateName} #{text}&token=#{token}&team_id=#{@teamId}&team_domain=example&channel_id=C6789123&channel_name=test&user_id=#{@userId}&user_name=TestUser&command=/template"
+    "text=#{command} #{templateName} #{text}&token=#{token}&team_id=#{@teamId}&team_domain=example&channel_id=C6789123&channel_name=test&user_id=#{@userId}&user_name=TestUser&command=/template"
   end
 
 
