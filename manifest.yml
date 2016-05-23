@@ -5,5 +5,4 @@ applications:
   memory: 128M
   buildpack: https://github.com/gogolok/cloudfoundry-buildpack-elixir
   command: mix run --no-halt
-  services:
-  - ElephantSQL
+  stack: cflinuxfs2
