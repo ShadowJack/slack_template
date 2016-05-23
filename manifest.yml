@@ -1,0 +1,9 @@
+---
+applications:
+- name: slack-template 
+  instances: 1
+  memory: 128M
+  buildpack: https://github.com/gogolok/cloudfoundry-buildpack-elixir
+  command: mix run --no-halt
+  services:
+  - ElephantSQL
