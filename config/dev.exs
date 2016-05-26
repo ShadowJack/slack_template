@@ -9,3 +9,5 @@ config :slack_template, SlackTemplate.Repo,
   database: "slack_template_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :slack_template, :cowboy_port, "8080"

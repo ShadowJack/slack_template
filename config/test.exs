@@ -11,3 +11,4 @@ config :slack_template, SlackTemplate.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :slack_template, slack_token: "test_token"
+config :slack_template, :cowboy_port, "8080"

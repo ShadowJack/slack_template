@@ -1,10 +1,12 @@
 defmodule SlackTemplate do
   use Application
+  import Logger
 
   def start(_type, _args) do
     import Supervisor.Spec
 
-    port = Application.get_env(:slack_template, :cowboy_port, 8080)
+    port = String.to_integer(Application.get_env(:slack_template, :cowboy_port, "8080"))
+    Logger.info("Port: #{port}")
 
     children = [
       Plug.Adapters.Cowboy.child_spec(
