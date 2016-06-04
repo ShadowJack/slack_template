@@ -7,7 +7,7 @@ With this command you can save some snippets and quickly retrieve them whithout 
 
 This bot can be easily deployed as a cloud foundry app on the IBM bluemix platform.
 
-Download and setup cf CLI application as explained on [this page|https://console.eu-gb.bluemix.net/docs/cfapps/ee.html#ee_cf](steps 2-4)
+Download and setup cf CLI application as explained on [this page](https://console.eu-gb.bluemix.net/docs/cfapps/ee.html#ee_cf)(steps 2-4)
 Now you can push an application via `cf push YourAppName`
 
 Then you will need some pgsql server to store your data. 
