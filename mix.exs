@@ -32,7 +32,7 @@ defmodule SlackTemplate.Mixfile do
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.1"},
       {:ecto, "~> 2.0.0-rc.3"},
-      {:postgrex, "~> 0.11.1"}
+      {:postgrex, "~> 0.11.1"},
     ]
   end
 end

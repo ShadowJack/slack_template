@@ -1,8 +1,12 @@
 defmodule SlackTemplate.Business.TemplateManager do
   alias SlackTemplate.Models.Template
 
+  @moduledoc """
+  Main service that handles requests to the template entities
+  """
+
   @doc """
-  Processes user request: 
+  Processes user request:
   gets request parameters and returns response message
   """
   @spec process(%{String.t => String.t}) :: String.t
@@ -12,7 +16,7 @@ defmodule SlackTemplate.Business.TemplateManager do
     |> do_process(team_id, user_id)
   end
 
-  def process(_) do 
+  def process(_) do
     "Please enter some command\n\n" <> print_usage
   end
 

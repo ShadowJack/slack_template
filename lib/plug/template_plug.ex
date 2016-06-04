@@ -1,6 +1,10 @@
 defmodule SlackTemplate.Plug.TemplatePlug do
   import Plug.Conn
-  
+
+  @moduledoc """
+  A plug that passes requests to TemplateManager service.
+  """
+
   def init(opts), do: opts
 
   def call(conn, _opts) do

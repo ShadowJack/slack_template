@@ -2,17 +2,24 @@ defmodule SlackTemplate do
   use Application
   import Logger
 
+  @moduledoc """
+  Entry point of the application.
+  Supervision tree is set up here.
+  """
+
   def start(_type, _args) do
     import Supervisor.Spec
 
-    port = String.to_integer(Application.get_env(:slack_template, :cowboy_port, "8080"))
+    port = String.to_integer(
+      Application.get_env(:slack_template, :cowboy_port, "8080")
+    )
     Logger.info("Port: #{port}")
 
     children = [
       Plug.Adapters.Cowboy.child_spec(
-        :http, 
-        SlackTemplate.Plug.Router, 
-        [], 
+        :http,
+        SlackTemplate.Plug.Router,
+        [],
         port: port),
       supervisor(SlackTemplate.Repo, [])
     ]
